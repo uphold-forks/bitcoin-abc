@@ -1,0 +1,5 @@
+pipeline:
+  publish:
+    image: registry.uphold.internal/drone-ecr:latest
+    forward_ssh_key: false
+    privileged: true
