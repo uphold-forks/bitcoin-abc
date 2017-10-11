@@ -1005,7 +1005,7 @@ UniValue ProcessImport(const UniValue &data, const int64_t timestamp) {
                 pwalletMain->SetAddressBook(vchAddress, label, "receive");
 
                 if (pwalletMain->HaveKey(vchAddress)) {
-                    return false;
+                    throw JSONRPCError(RPC_WALLET_ERROR, "The wallet already contains the private key for this address or script");
                 }
 
                 pwalletMain->mapKeyMetadata[vchAddress].nCreateTime = timestamp;
