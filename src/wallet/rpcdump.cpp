@@ -1052,6 +1052,7 @@ UniValue importmulti(const JSONRPCRequest& mainRequest)
             "2. options                 (json, optional)\n"
             "  {\n"
             "     \"rescan\": <false>,         (boolean, optional, default: true) Stating if should rescan the blockchain after all imports\n"
+            "     \"rescanUpdate\",   (boolean, optional, default true) Stating if rescan should notify existent transactions\n"
             "  }\n"
             "\nExamples:\n" +
             HelpExampleCli("importmulti", "'[{ \"scriptPubKey\": { \"address\": \"<my address>\" }, \"timestamp\":1455191478 }, "
@@ -1069,12 +1070,17 @@ UniValue importmulti(const JSONRPCRequest& mainRequest)
 
     //Default options
     bool fRescan = true;
+    bool fRescanUpdate = true;
 
     if (!mainRequest.params[1].isNull()) {
         const UniValue& options = mainRequest.params[1];
 
         if (options.exists("rescan")) {
             fRescan = options["rescan"].get_bool();
+        }
+
+        if (options.exists("rescanUpdate")) {
+            fRescanUpdate = options["rescanUpdate"].get_bool();
         }
     }
 
@@ -1120,7 +1126,7 @@ UniValue importmulti(const JSONRPCRequest& mainRequest)
     }
 
     if (fRescan && fRunScan && requests.size()) {
-        int64_t scannedTime = pwallet->RescanFromTime(nLowestTimestamp, true /* update */);
+        int64_t scannedTime = pwallet->RescanFromTime(nLowestTimestamp, fRescanUpdate);
         pwallet->ReacceptWalletTransactions();
 
         if (scannedTime > nLowestTimestamp) {
